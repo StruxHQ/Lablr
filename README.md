@@ -4,7 +4,7 @@
 
 Lablr connects a DYMO LabelWriter directly to an ESP32-S3 over USB. It stores SVG labels, renders them on-device with ThorVG, and prints them over Wi-Fi — no PC, Raspberry Pi, or server required.
 
-Use the built-in web interface or send commands over a local WebSocket. For remote access, the optional [Strux Relay](https://github.com/vanBassum/strux-relay) also lets MCP clients such as ChatGPT discover and control the printer. Lablr is built on [Strux](https://github.com/vanBassum/Strux), which provides Wi-Fi setup, the web UI, OTA updates, settings, and command routing.
+Use the built-in web interface or send commands over a local WebSocket. For remote access, the optional [Strux Relay](https://github.com/StruxHQ/strux-relay) also lets MCP clients such as ChatGPT discover and control the printer. Lablr is built on [Strux](https://github.com/StruxHQ/Strux), which provides Wi-Fi setup, the web UI, OTA updates, settings, and command routing.
 
 <img width="1096" height="591" alt="Lablr web interface" src="https://github.com/user-attachments/assets/cc282e06-f84b-497d-8e5a-3e04add95bac" />
 
@@ -19,7 +19,7 @@ The current print implementation targets a 300-DPI, 672-dot LabelWriter print pa
 
 ## Getting started
 
-1. Download `Lablr-factory.bin` from the [latest release](https://github.com/vanBassum/Lablr/releases).
+1. Download `Lablr-factory.bin` from the [latest release](https://github.com/StruxHQ/Lablr/releases).
 2. Open [ESP Web Flasher](https://espressif.github.io/esptool-js/) in Chrome or Edge, select the ESP32-S3 serial port, and flash the factory binary at offset `0x0`.
 3. On first setup, connect to the `Lablr-AP` access point and use the device's web interface to configure Wi-Fi.
 4. Open the device's web interface on your network to manage labels and printing.
@@ -32,7 +32,7 @@ The printer-specific implementation lives in `main/app/`, including `UsbHostMana
 
 Board-specific definitions live under `main/hardware/boards/`. Adding a different ESP32 board requires its own board configuration and suitable USB-host hardware, flash, and PSRAM.
 
-The reusable application foundation lives in `main/strux/`. See [Strux](https://github.com/vanBassum/Strux) for the framework and its architecture.
+The reusable application foundation lives in `main/strux/`. See [Strux](https://github.com/StruxHQ/Strux) for the framework and its architecture.
 
 ## Tech stack
 
