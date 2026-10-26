@@ -46,4 +46,5 @@ The reusable application foundation lives in `main/strux/`. See [Strux](https://
 
 ## License
 
-No license is currently specified. All rights are reserved unless a license is added.
+Licensed under the [MIT License](LICENSE).
+
