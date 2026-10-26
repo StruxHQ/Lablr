@@ -1,28 +1,65 @@
 # Lablr
 
-**A network label printer that anything can drive.** Lablr is an ESP32-S3 with a DYMO
-LabelWriter on its USB host port. A label is an ordinary SVG file on the device's own
-filesystem; the device rasterises it with ThorVG at the label stock's real dot geometry and
-puts it on paper. It is driven from its own web UI, from a script over a WebSocket, or
-off-LAN through a relay — all three speak the same commands, because there is only one set.
+**Turn a USB DYMO LabelWriter into a standalone network label printer with an ESP32-S3.**
 
-The device describes itself: `help describe` returns every command and argument, and
-`system describe` returns what this product is and how it is meant to be used. So a caller
-that has never seen this repository — a person, a script, or a model at the other end of the
-relay — can find out what to send without being told.
+Lablr connects a DYMO LabelWriter to an ESP32-S3 over USB host. Create labels as SVG files, preview them, and print them over Wi-Fi. The ESP32 renders the SVG with ThorVG and sends the raster data to the printer. No Raspberry Pi, cloud account, or always-on server is required for local use.
 
-It is built on [Strux](https://github.com/vanBassum/Strux), the template this repository was
-copied from, which supplies the foundation — WiFi with AP fallback, a React web UI served
-from flash, OTA for firmware and UI, a live console, NVS-backed settings and the relay link.
-Much of this document describes that foundation, because much of the code is still it.
-Product code belongs in `main/app/`; `main/strux/` stays generic so improvements can travel
-both ways with the template.
+You can control Lablr from its browser-based interface or send commands over a local WebSocket connection. If you *want* remote access, the optional [Strux Relay](https://github.com/vanBassum/strux-relay) connects the device to external clients, including AI assistants through MCP. The device advertises its available commands, so clients can discover how to operate it.
 
-<img width="1096" height="591" alt="image" src="https://github.com/user-attachments/assets/cc282e06-f84b-497d-8e5a-3e04add95bac" />
+Lablr is a real-world application built on [Strux](https://github.com/vanBassum/Strux), an ESP32 application template that provides Wi-Fi setup, a React web UI, OTA updates, settings, and command routing. The printer-specific code lives in `main/app/`; the reusable framework lives in `main/strux/`.
+
+> **Photo coming soon:** A picture of the ESP32-S3, connected LabelWriter, and printed label will go here. The screenshot below shows the current web interface.
+
+<img width="1096" height="591" alt="Lablr web interface" src="https://github.com/user-attachments/assets/cc282e06-f84b-497d-8e5a-3e04add95bac" />
+
+## What can it do?
+
+- **Print SVG labels:** Store a design on the ESP32 and print it using a named label-stock profile.
+- **Preview before printing:** Preview and printing use the same ThorVG rasterizer.
+- **Configure different label rolls:** Media dimensions and calibration are data, not hardcoded firmware settings.
+- **Manage designs and fonts:** On-device flash storage holds SVG labels, TrueType fonts, and media definitions.
+- **Work locally:** The web interface and commands run on the ESP32 itself.
+- **Connect remotely (optional):** Strux Relay can expose the same commands to remote clients and MCP-compatible assistants.
+
+## How printing works
+
+```text
+Browser / local WebSocket / optional Strux Relay
+                     |
+                ESP32-S3 (Lablr)
+                SVG + media profile
+                     |
+              ThorVG rasterizer
+                     |
+                 USB host
+                     |
+              DYMO LabelWriter
+```
+
+For example, after saving an SVG design to `/labels/x.svg`, print it using:
+
+```text
+print svg -path /labels/x.svg -media square25
+```
+
+The media profile selects the label stock; use the calibration commands to adjust positioning for a particular roll.
+
+## Hardware and setup
+
+- ESP32-S3 with **16 MB flash and 8 MB octal PSRAM** (the currently supported board).
+- A compatible DYMO LabelWriter connected to the ESP32-S3's native USB host pins.
+- **External 5 V USB VBUS power** for the printer connection; the board cannot supply it directly.
+- Wi-Fi for network access.
+
+**Quick start:** Flash the latest [factory firmware release](https://github.com/vanBassum/Lablr/releases) using the browser-based method below, connect to the device's `Lablr-AP` fallback access point to configure Wi-Fi, and open its web interface. The sections below cover building from source, board configuration, and the printing internals.
+
+**Note:** The current implementation targets the documented 300-DPI, 672-dot LabelWriter print path; do not assume every DYMO model is supported.
 
 ---
 
 ## What's Included
+
+
 
 ### This product
 
